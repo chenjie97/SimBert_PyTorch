@@ -6,13 +6,19 @@
 代码细节参考自：
 
 @techreport{simbert,
-  title={SimBERT: Integrating Retrieval and Generation into BERT},
-  author={Jianlin Su},
-  year={2020},
-  url="https://github.com/ZhuiyiTechnology/simbert",
+
+title={SimBERT: Integrating Retrieval and Generation into BERT},
+
+author={Jianlin Su},
+
+year={2020},
+
+url="https://github.com/ZhuiyiTechnology/simbert"
+
 }
 
 数据集来自：**ChineseSTS**
+
 唐善成, 白云悦, 马付玉. 中文语义相似度训练集. 西安科技大学.2016. https://github.com/IAdmireu/ChineseSTS
 
 Tang Shancheng, Bai Yunyue, Ma Fuyu. Chinese Semantic Text Similarity Trainning Dataset. Xi'an University of Science and Technology.2016. https://github.com/IAdmireu/ChineseSTS
