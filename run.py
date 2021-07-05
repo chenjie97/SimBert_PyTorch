@@ -7,8 +7,7 @@ import argparse
 import time
 from torch.utils.data import DataLoader
 import os
-from models.data.data_utils import bulid_dataset,get_time_dif
-from train_eval import train
+
 
 
 
@@ -16,7 +15,7 @@ parser = argparse.ArgumentParser(description='SimBERT Torch version')
 # parameters of datasets
 parser.add_argument('--dataset_path', type=str, default="./corpus/data_similarity.json", help='dataset_path')
 # parameters of model
-parser.add_argument('--model', type=str, default="simbert", help='choose a model: simbert')
+parser.add_argument('--model', type=str, default="simCSE", help='choose a model: simbert,simCSE')
 parser.add_argument('--ptm_path', type=str, default="./original_ptms_zoo/bert_base_chinese"
                     , help='pretrained model path(including config.json,model.bin and vocab.txt)'
                            'or token of huggingface model hub')
@@ -46,22 +45,26 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(1)
     torch.backends.cudnn.deterministic = True  # 保证结果可复现
 
+    """动态导包"""
+    model_name = args.model
+    data_utils_package = import_module('models.data_utils.' + model_name + '_data')
+    trainer_package = import_module('models.trainer.train_eval_' + model_name)
+    model_package = import_module('models.layers.' + model_name)
+    """END"""
+
 
     # loading model
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
-    model_name = args.model
-    x = import_module('models.layers.' + model_name)
-    model = x.Model(args).to(device)
+    model = model_package.Model(args).to(device)
 
-
-    # loading data
+    # loading data_utils
     start_time = time.time()
-    print("Loading data...")
-    data_set = bulid_dataset(args)
+    print("Loading data_utils...")
+    data_set = data_utils_package.bulid_dataset(args)
     data_loader = DataLoader(data_set, batch_size=args.batch_size, shuffle=False)
-    time_dif = get_time_dif(start_time)
+    time_dif = data_utils_package.get_time_dif(start_time)
     print("Time usage:", time_dif)
 
 
     # train
-    train(args, model, data_loader)
+    trainer_package.train(args, model, data_loader)

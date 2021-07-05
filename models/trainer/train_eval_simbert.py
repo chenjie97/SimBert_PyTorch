@@ -3,9 +3,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from sklearn import metrics
 import time
-from models.data.data_utils import get_time_dif
+from models.data_utils.simbert_data import get_time_dif
 from transformers import AdamW
 from transformers import get_linear_schedule_with_warmup
 
