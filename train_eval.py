@@ -17,14 +17,13 @@ def compute_loss(outputs_cls, outputs_seq, pt_batch):
     loss = loss_seq+loss_sim
     return loss,loss_seq,loss_sim,correct_seq,correct_sim,denominator_seq
 def compute_seq_loss(outputs_seq,pt_batch):
-    hidden_size = outputs_seq.shape[2]
-    y_true = pt_batch['input_ids'].view(-1)
-    y_mask = pt_batch['token_type_ids'].view(-1) # segment embedding
-    y_pred = outputs_seq.view(-1,hidden_size)
-    y_pred = y_pred[y_mask>0,:][:-1] # 错位预测,只预测第二句话（即segment_id=1）
-    y_true = y_true[y_mask>0][1:] # 错位预测
+    y_pred = outputs_seq[:, :-1, :]
+    y_true = pt_batch['input_ids'][:, 1:]
+    y_mask = pt_batch['token_type_ids'][:, 1:] # segment embedding
+    y_pred = y_pred[y_mask>0,:] # 错位预测,只预测第二句话（即segment_id=1）
+    y_true = y_true[y_mask>0]# 错位预测
     y_mask = y_mask[y_mask>0]
-    denominator_seq = torch.sum(y_mask)-1
+    denominator_seq = torch.sum(y_mask)
     loss = F.cross_entropy(y_pred,y_true)
     correct_seq = torch.sum(torch.eq(torch.max(y_pred, dim=1)[1], y_true))
     return loss,correct_seq,denominator_seq
